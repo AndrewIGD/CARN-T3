@@ -1,0 +1,368 @@
+program: sweep.py
+method: random
+metric:
+  name: val_acc
+  goal: maximize
+parameters:
+  dataset:
+    values: ["cifar100"]
+  
+  model:
+    values: ["resnet18", "resnet50", "resnest14d", "resnest26d"]
+  
+  pretrained:
+    value: false
+  
+  epochs:
+    value: 50
+  
+  batch_size:
+    distribution: int_uniform
+    min: 32
+    max: 256
+  
+  max_batch_size:
+    distribution: int_uniform
+    min: 256
+    max: 1024
+  
+  min_batch_size:
+    value: 1
+  
+  lr:
+    distribution: uniform
+    min: 0.0001
+    max: 0.1
+  
+  optimizer:
+    values: ["sgd", "adam", "adamw", "muon", "sam"]
+  
+  scheduler:
+    values: ["steplr", "reducelronplateau", null]
+  
+  batch_schedule:
+    values: ["none", "linear", "exponential", "step", "plateau"]
+  
+  early_stopping:
+    value: true
+  
+  use_amp:
+    value: true
+  
+  label_smoothing:
+    distribution: uniform
+    min: 0.0
+    max: 0.2
+  
+  # Optimizer Configs - SGD
+  optimizer_configs.sgd.momentum:
+    distribution: uniform
+    min: 0.8
+    max: 0.99
+  
+  optimizer_configs.sgd.nesterov:
+    values: [true, false]
+  
+  optimizer_configs.sgd.weight_decay:
+    distribution: uniform
+    min: 1e-5
+    max: 1e-2
+  
+  # Optimizer Configs - Adam
+  optimizer_configs.adam.betas:
+    values:
+      - [0.9, 0.999]
+      - [0.9, 0.99]
+      - [0.95, 0.999]
+  
+  optimizer_configs.adam.weight_decay:
+    distribution: uniform
+    min: 0.0
+    max: 1e-2
+  
+  # Optimizer Configs - AdamW
+  optimizer_configs.adamw.betas:
+    values:
+      - [0.9, 0.999]
+      - [0.9, 0.99]
+      - [0.95, 0.999]
+  
+  optimizer_configs.adamw.weight_decay:
+    distribution: uniform
+    min: 1e-4
+    max: 1e-1
+  
+  # Optimizer Configs - Muon
+  optimizer_configs.muon.base_optimizer:
+    values: ["sgd", "adam", "adamw"]
+  
+  optimizer_configs.muon.momentum:
+    distribution: uniform
+    min: 0.7
+    max: 0.95
+  
+  optimizer_configs.muon.nesterov:
+    values: [true, false]
+  
+  # Optimizer Configs - SAM
+  optimizer_configs.sam.base_optimizer:
+    values: ["sgd", "adam", "adamw"]
+  
+  optimizer_configs.sam.rho:
+    distribution: uniform
+    min: 0.01
+    max: 0.1
+  
+  optimizer_configs.sam.adaptive:
+    values: [true, false]
+  
+  optimizer_configs.sam.momentum:
+    distribution: uniform
+    min: 0.8
+    max: 0.99
+  
+  optimizer_configs.sam.weight_decay:
+    distribution: uniform
+    min: 1e-5
+    max: 1e-3
+  
+  # LR Scheduler Configs - StepLR
+  scheduler_configs.steplr.step_size:
+    distribution: int_uniform
+    min: 10
+    max: 50
+  
+  scheduler_configs.steplr.gamma:
+    distribution: uniform
+    min: 0.05
+    max: 0.5
+  
+  scheduler_configs.steplr.last_epoch:
+    value: -1
+  
+  # LR Scheduler Configs - ReduceLROnPlateau
+  scheduler_configs.reducelronplateau.factor:
+    distribution: uniform
+    min: 0.3
+    max: 0.8
+  
+  scheduler_configs.reducelronplateau.patience:
+    distribution: int_uniform
+    min: 3
+    max: 10
+  
+  scheduler_configs.reducelronplateau.threshold:
+    distribution: uniform
+    min: 1e-5
+    max: 1e-2
+  
+  scheduler_configs.reducelronplateau.threshold_mode:
+    values: ["rel", "abs"]
+  
+  scheduler_configs.reducelronplateau.cooldown:
+    distribution: int_uniform
+    min: 0
+    max: 5
+  
+  scheduler_configs.reducelronplateau.min_lr:
+    value: 1e-8
+  
+  scheduler_configs.reducelronplateau.eps:
+    value: 1e-8
+  
+  # Batch Scheduler Configs - Linear
+  batch_scheduler_config.linear.start_factor:
+    value: 1.0
+  
+  batch_scheduler_config.linear.end_factor:
+    distribution: uniform
+    min: 2.0
+    max: 8.0
+  
+  batch_scheduler_config.linear.milestone:
+    distribution: int_uniform
+    min: 50
+    max: 300
+  
+  # Batch Scheduler Configs - Exponential/Step
+  batch_scheduler_config.exponential.step_size:
+    distribution: int_uniform
+    min: 5
+    max: 30
+  
+  batch_scheduler_config.exponential.gamma:
+    distribution: uniform
+    min: 1.5
+    max: 3.0
+  
+  batch_scheduler_config.step.step_size:
+    distribution: int_uniform
+    min: 5
+    max: 30
+  
+  batch_scheduler_config.step.gamma:
+    distribution: uniform
+    min: 1.5
+    max: 3.0
+  
+  # Batch Scheduler Configs - Plateau
+  batch_scheduler_config.plateau.mode:
+    value: "max"
+  
+  batch_scheduler_config.plateau.factor:
+    distribution: uniform
+    min: 1.5
+    max: 3.0
+  
+  batch_scheduler_config.plateau.patience:
+    distribution: int_uniform
+    min: 5
+    max: 20
+  
+  batch_scheduler_config.plateau.threshold:
+    distribution: uniform
+    min: 1e-5
+    max: 1e-2
+  
+  batch_scheduler_config.plateau.threshold_mode:
+    values: ["rel", "abs"]
+  
+  batch_scheduler_config.plateau.cooldown:
+    distribution: int_uniform
+    min: 0
+    max: 5
+  
+  # Early Stopping Config
+  early_stopping_config.patience:
+    value: 8
+  
+  early_stopping_config.min_delta:
+    value: 0
+  
+  # Train Transforms - Random Resized Crop
+  transforms.train.random_resized_crop.enabled:
+    value: true
+  
+  transforms.train.random_resized_crop.p:
+    distribution: uniform
+    min: 0.5
+    max: 1.0
+  
+  transforms.train.random_resized_crop.size:
+    values:
+      - [32, 32]
+      - [28, 28]
+  
+  transforms.train.random_resized_crop.scale:
+    values:
+      - [0.7, 1.0]
+      - [0.8, 0.95]
+      - [0.9, 0.9]
+  
+  # Train Transforms - Random Translate
+  transforms.train.random_translate.enabled:
+    value: true
+  
+  transforms.train.random_translate.p:
+    distribution: uniform
+    min: 0.2
+    max: 0.6
+  
+  transforms.train.random_translate.translate:
+    values:
+      - [0.05, 0.15]
+      - [0.1, 0.2]
+      - [0.1, 0.1]
+  
+  # Train Transforms - Random Rotation
+  transforms.train.random_rotation.enabled:
+    value: false
+  
+  transforms.train.random_rotation.p:
+    distribution: uniform
+    min: 0.2
+    max: 0.6
+  
+  transforms.train.random_rotation.degrees:
+    distribution: int_uniform
+    min: 5
+    max: 30
+  
+  # Train Transforms - Random Horizontal Flip
+  transforms.train.random_horizontal_flip.enabled:
+    value: true
+  
+  transforms.train.random_horizontal_flip.p:
+    distribution: uniform
+    min: 0.3
+    max: 0.7
+  
+  # Train Transforms - Random Vertical Flip
+  transforms.train.random_vertical_flip.enabled:
+    value: false
+  
+  transforms.train.random_vertical_flip.p:
+    distribution: uniform
+    min: 0.2
+    max: 0.6
+  
+  # Train Transforms - CutMix/MixUp
+  transforms.train.cutmix_mixup.enabled:
+    value: true
+  
+  transforms.train.cutmix_mixup.p:
+    distribution: uniform
+    min: 0.5
+    max: 1.0
+  
+  transforms.train.cutmix_mixup.alpha:
+    distribution: uniform
+    min: 0.1
+    max: 0.5
+  
+  transforms.train.cutmix_mixup.max_ramp_epochs:
+    distribution: int_uniform
+    min: 1
+    max: 25
+  
+  # Test Transforms - Resized Crop
+  transforms.test.resized_crop.enabled:
+    value: true
+  
+  transforms.test.resized_crop.crop_size:
+    distribution: int_uniform
+    min: 24
+    max: 32
+  
+  transforms.test.resized_crop.size:
+    values:
+      - [32, 32]
+      - [28, 28]
+  
+  # Test Transforms - Fixed Affine
+  transforms.test.fixed_affine.enabled:
+    value: true
+  
+  transforms.test.fixed_affine.translations:
+    values:
+      - [[3, 3], [-3, -3]]
+      - [[2, 2], [-2, -2]]
+      - [[4, 4], [-4, -4]]
+  
+  # Test Transforms - Random Rotation
+  transforms.test.random_rotation.enabled:
+    value: false
+  
+  transforms.test.random_rotation.degrees:
+    distribution: int_uniform
+    min: 5
+    max: 30
+  
+  # Test Transforms - Random Horizontal Flip
+  transforms.test.random_horizontal_flip.enabled:
+    value: true
+  
+  # Test Transforms - Random Vertical Flip
+  transforms.test.random_vertical_flip.enabled:
+    value: false
+
