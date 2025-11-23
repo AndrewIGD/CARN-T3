@@ -1,0 +1,141 @@
+{
+  "dataset": "cifar100",
+  "model": "resnest26d",
+  "pretrained": false,
+  "epochs": 500,
+  "batch_size": 64,
+  "max_batch_size": 512,
+  "min_batch_size": 1,
+  "lr": 0.01,
+  "optimizer": "muon",
+  "scheduler": "reducelronplateau",
+  "batch_schedule": "linear",
+  "early_stopping": true,
+  "use_amp": true,
+  "label_smoothing": 0.1,
+  "optimizer_configs": {
+    "sgd": {
+      "momentum": 0.9,
+      "nesterov": false,
+      "weight_decay": 5e-4
+    },
+    "adam": {
+      "betas": [0.9, 0.999],
+      "weight_decay": 0.0
+    },
+    "adamw": {
+      "betas": [0.9, 0.999],
+      "weight_decay": 0.01
+    },
+    "muon": {
+      "base_optimizer": "sgd",
+      "momentum": 0.85,
+      "nesterov": true
+    },
+    "sam": {
+      "base_optimizer": "sgd",
+      "rho": 0.05,
+      "adaptive": false,
+      "momentum": 0.9,
+      "weight_decay": 1e-4
+    }
+  },
+  "scheduler_configs": {
+    "steplr": {
+      "step_size": 20,
+      "gamma": 0.1,
+      "last_epoch": -1
+    },
+    "reducelronplateau": {
+      "factor": 0.7,
+      "patience": 4,
+      "threshold": 0.01,
+      "threshold_mode": "rel",
+      "cooldown": 2,
+      "min_lr": 1e-6,
+      "eps": 1e-8
+    }
+  },
+  "batch_scheduler_config": {
+    "linear": {
+      "start_factor": 1.0,
+      "end_factor": 4.0,
+      "milestone": 250
+    },
+    "exponential": {
+      "step_size": 10,
+      "gamma": 2.0
+    },
+    "step": {
+      "step_size": 10,
+      "gamma": 2.0
+    },
+    "plateau": {
+      "mode": "max",
+      "factor": 2.0,
+      "patience": 10,
+      "threshold": 1e-4,
+      "threshold_mode": "rel",
+      "cooldown": 0
+    }
+  },
+  "early_stopping_config": {
+    "patience": 10,
+    "min_delta": 0
+  },
+  "transforms": {
+    "train": {
+      "random_resized_crop": {
+        "enabled": true,
+        "p": 1,
+        "size": [32, 32],
+        "scale": [0.8, 0.95]
+      },
+      "random_translate": {
+        "enabled": true,
+        "p": 0.4,
+        "translate": [0.05, 0.15]
+      },
+      "random_rotation": {
+        "enabled": false,
+        "p": 0.4,
+        "degrees": 15
+      },
+      "random_horizontal_flip": {
+        "enabled": true,
+        "p": 0.5
+      },
+      "random_vertical_flip": {
+        "enabled": false,
+        "p": 0.4
+      },
+      "cutmix_mixup": {
+        "enabled": true,
+        "p": 1,
+        "alpha": 0.2,
+        "max_ramp_epochs": 1
+      }
+    },
+    "test": {
+      "resized_crop": {
+        "enabled": true,
+        "crop_size": 28,
+        "size": [32, 32]
+      },
+      "fixed_affine": {
+        "enabled": true,
+        "translations": [[3, 3], [-3, -3]]
+      },
+      "random_rotation": {
+        "enabled": false,
+        "degrees": 15
+      },
+      "random_horizontal_flip": {
+        "enabled": true
+      },
+      "random_vertical_flip": {
+        "enabled": false
+      }
+    }
+  }
+}
